@@ -1,6 +1,7 @@
-import { getWalkers } from "./database.js"
+import { getWalkers, getCities } from "./database.js"
 
-const walkers = getWalkers()
+const walkers = getWalkers();
+const cities = getCities();
 
 document.addEventListener(
     "click",
@@ -8,7 +9,22 @@ document.addEventListener(
     (clickEvt) => {
         const cityTarget = clickEvt.target
         if (cityTarget.dataset.type === 'city') {
-            window.alert(`${cityTarget.dataset.walkername} is servicing this city`)
+            let walkersList = ""
+            let numWalkers = 0
+            for (const walker of walkers) {
+                if (walker.cityId === parseInt(cityTarget.dataset.id) && numWalkers === 0) {
+                    walkersList += walker.name;
+                    numWalkers ++;
+                } else if (walker.cityId === parseInt(cityTarget.dataset.id) && numWalkers !== 0) {
+                    walkersList += `, ${walker.name}`;
+                    numWalkers ++;
+                }
+            }
+            if (numWalkers > 1) {
+                window.alert(`${walkersList} are servicing this city`)    
+            } else {
+                window.alert(`${walkersList} is servicing this city`)
+            }
         }    
     }
 )
@@ -16,8 +32,10 @@ document.addEventListener(
 export const CityList = () => {
     let citiesHTML = "<ul>"
 
-    for (const walker of walkers) {
-        citiesHTML += `<li data-walkername="${walker.name}" data-type="city">${walker.city}</li>`
+    for (const city of cities) {
+        citiesHTML += `<li data-type="city" 
+                        data-id="${city.id}"
+                        >${city.name}</li>`
     }
 
     citiesHTML += "</ul>"
